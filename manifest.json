@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Text Input Reflector",
+  "version": "1.0",
+  "description": "Reflects text input content in extension popup",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Text Input Reflector"
+  }
+}
