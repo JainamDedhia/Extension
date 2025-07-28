@@ -5,7 +5,11 @@
   "description": "Reflects text input content in extension popup",
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://api.groq.com/*"
   ],
   "content_scripts": [
     {
@@ -14,6 +18,9 @@
       "run_at": "document_idle"
     }
   ],
+  "background": {
+  "service_worker": "background.js"
+},
   "action": {
     "default_popup": "popup.html",
     "default_title": "Text Input Reflector"

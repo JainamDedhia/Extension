@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 450px;
+            min-height: 400px;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .api-key-section {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .api-key-section input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .status {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .original-text {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            max-height: 100px;
+            overflow-y: auto;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .enhance-button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .enhance-button:hover:not(:disabled) {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .enhance-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .enhanced-prompts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .prompt-option {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        
+        .prompt-option:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .prompt-option .label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #FFD700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .prompt-option .text {
+            font-size: 13px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        .error {
+            background: rgba(255,0,0,0.2);
+            color: #ffcccc;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            border-left: 4px solid #ff4444;
+        }
+        
+        .empty {
+            text-align: center;
+            opacity: 0.7;
+            font-style: italic;
+            padding: 30px 20px;
+        }
+        
+        .info {
+            font-size: 11px;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .message-box {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+            font-weight: 500;
+        }
+
+        .message-box.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .character-count {
+            font-size: 12px;
+            opacity: 0.8;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .character-count.over-limit {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🚀 Prompt Enhancer</h2>
+    </div>
+    
+    <div class="api-key-section">
+        <label for="apiKeyInput">Groq API Key:</label>
+        <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key...">
+    </div>
+    
+    <div class="status" id="status">
+        Waiting for text input...
+    </div>
+    
+    <div id="originalTextSection" style="display: none;">
+        <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">📝 Original Prompt:</div>
+        <div class="original-text" id="originalText"></div>
+        <div class="character-count" id="characterCount"></div>
+        <button class="enhance-button" id="enhanceButton">✨ Enhance Prompt</button>
+    </div>
+    
+    <div id="enhancedSection" style="display: none;">
+        <div style="font-weight: 600; margin-bottom: 10px; font-size: 14px;">🎯 Enhanced Prompts (Click to Replace):</div>
+        <div class="enhanced-prompts" id="enhancedPrompts"></div>
+    </div>
+    
+    <div class="info" id="info"></div>
+
+    <div id="messageBox" class="message-box"></div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
