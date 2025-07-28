@@ -23,12 +23,17 @@
             console.log('TEXT REFLECTOR: Saving:', text.substring(0, 50));
             
             try {
-                chrome.storage.local.set({
-                    currentText: text,
-                    timestamp: Date.now(),
-                    source: source,
-                    url: location.href
-                });
+                if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+  chrome.storage.local.set({
+    currentText: text,
+    timestamp: Date.now(),
+    source: source,
+    url: location.href
+  });
+} else {
+  console.warn('TEXT REFLECTOR: chrome.storage.local is unavailable in this context.');
+}
+
             } catch (e) {
                 console.error('TEXT REFLECTOR: Storage error:', e);
             }

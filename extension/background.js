@@ -1,8 +1,7 @@
 // Background service worker
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Prompt Enhancer extension installed');
-  
-  // Initialize storage
+
   chrome.storage.local.set({
     currentText: '',
     timestamp: null,
@@ -17,7 +16,7 @@ chrome.runtime.onInstalled.addListener(() => {
 // Handle messages from content script and popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'enhancePrompt') {
-    enhancePromptWithGroq(request.text, request.apiKey)
+    enhancePromptWithGemini(request.text, request.apiKey)
       .then(enhancedPrompts => {
         sendResponse({ success: true, enhancedPrompts });
       })
@@ -25,37 +24,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.error('Error enhancing prompt:', error);
         sendResponse({ success: false, error: error.message });
       });
-    return true; // Indicates async response
+    return true;
   }
 });
 
-async function enhancePromptWithGroq(originalText, apiKey) {
+async function enhancePromptWithGemini(originalText, apiKey) {
   if (!apiKey) {
-    throw new Error('Groq API key is required');
+    throw new Error('Gemini API key is required');
   }
 
-  // Determine the best model based on text characteristics
-  let model = 'llama-3.1-8b-instant'; // Default
-  
-  if (originalText.toLowerCase().includes('code') || 
-      originalText.toLowerCase().includes('app') || 
-      originalText.toLowerCase().includes('program') ||
-      originalText.toLowerCase().includes('function') ||
-      originalText.toLowerCase().includes('script')) {
-    model = 'llama-3.3-70b-versatile'; // Code
-  } else if (originalText.toLowerCase().includes('write') || 
-             originalText.toLowerCase().includes('essay') || 
-             originalText.toLowerCase().includes('article') ||
-             originalText.toLowerCase().includes('story')) {
-    model = 'gemma2-9b-it'; // Writing
-  } else if (originalText.toLowerCase().includes('image') || 
-             originalText.toLowerCase().includes('picture') || 
-             originalText.toLowerCase().includes('visual') ||
-             originalText.toLowerCase().includes('design')) {
-    model = 'llama-3.1-8b-instant'; // Using general for now as mistral-saba-24b might not be available
-  }
-
-  const systemPrompt = `You are a prompt enhancement specialist. Given a user's input prompt, generate exactly 3 improved versions that are:
+  const prompt = `You are a prompt enhancement specialist. Given a user's input prompt, generate exactly 3 improved versions that are:
 
 1. CONTEXTUAL: Add relevant context and background information
 2. STRUCTURED: Improve clarity, structure, and specificity  
@@ -65,55 +43,57 @@ Each enhanced prompt should be significantly more detailed and actionable than t
 
 Return ONLY a JSON array with exactly 3 strings, no additional text or formatting.
 
-Example format: ["enhanced prompt 1", "enhanced prompt 2", "enhanced prompt 3"]`;
+Original prompt: "${originalText}"`;
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt
-        },
-        {
-          role: 'user',
-          content: `Original prompt: "${originalText}"`
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000
-    })
-  });
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: prompt }]
+          }
+        ]
+      })
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(`Groq API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    throw new Error(`Gemini API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
   }
 
   const data = await response.json();
-  const content = data.choices[0]?.message?.content;
-  
-  if (!content) {
-    throw new Error('No response from Groq API');
+  const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!content || typeof content !== 'string') {
+    console.error('Gemini response invalid:', data);
+    throw new Error('No usable response from Gemini API');
   }
 
   try {
-    const enhancedPrompts = JSON.parse(content);
+    const cleaned = content.replace(/```(?:json)?/g, '').replace(/```/g, '').trim();
+    const enhancedPrompts = JSON.parse(cleaned);
+
     if (!Array.isArray(enhancedPrompts) || enhancedPrompts.length !== 3) {
-      throw new Error('Invalid response format');
+      throw new Error('Invalid response format (not 3 prompts)');
     }
+
     return enhancedPrompts;
   } catch (parseError) {
-    // Fallback: try to extract prompts from text response
+    // Fallback: try to extract plain text lines
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length >= 3) {
-      return lines.slice(0, 3).map(line => line.replace(/^\d+\.\s*/, '').replace(/^["']|["']$/g, ''));
+      return lines.slice(0, 3).map(line =>
+        line.replace(/^\d+\.\s*/, '').replace(/^["']|["']$/g, '')
+      );
     }
-    throw new Error('Could not parse enhanced prompts from response');
+
+    throw new Error('Could not parse enhanced prompts from Gemini response');
   }
 }
