@@ -1,0 +1,214 @@
+@@ .. @@
+         body {
+             width: 450px;
+             min-height: 400px;
+             padding: 20px;
+             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             margin: 0;
+             background: #1a1a1a;
+             color: #e5e5e5;
+             display: flex;
+             flex-direction: column;
+             gap: 15px;
+         }
+         
+         .header {
+             text-align: center;
+             margin-bottom: 10px;
+         }
+         
+         .header h2 {
+             margin: 0;
+             font-size: 18px;
+             font-weight: 400;
+             color: #ffffff;
+             letter-spacing: 2px;
+             text-transform: uppercase;
+         }
+         
+         .api-key-section {
+             background: #2a2a2a;
+             padding: 15px;
+             border-radius: 12px;
+             margin-bottom: 10px;
+             border: 1px solid #333;
+         }
+         
+         .api-key-section label {
+             color: #b0b0b0;
+             font-size: 13px;
+             font-weight: 500;
+         }
+         
+         .api-key-section input {
+             width: calc(100% - 20px);
+             padding: 12px;
+             border-radius: 8px;
+             border: 1px solid #404040;
+             background: #1e1e1e;
+             color: #e5e5e5;
+             font-size: 14px;
+             margin-top: 5px;
+             transition: all 0.3s ease;
+         }
+         
+         .api-key-section input:focus {
+             outline: none;
+             border-color: #555;
+             background: #252525;
+         }
+         
+         .status {
+             background: #2a2a2a;
+             padding: 12px;
+             border-radius: 12px;
+             font-size: 14px;
+             text-align: center;
+             border: 1px solid #333;
+             color: #b0b0b0;
+         }
+         
+         .original-text {
+             background: #2a2a2a;
+             padding: 15px;
+             border-radius: 12px;
+             font-family: monospace;
+             font-size: 13px;
+             line-height: 1.4;
+             word-wrap: break-word;
+             white-space: pre-wrap;
+             max-height: 100px;
+             overflow-y: auto;
+             border: 1px solid #333;
+             color: #e5e5e5;
+         }
+         
+         .enhance-button {
+             background: #2a2a2a;
+             color: white;
+             padding: 12px 20px;
+             border: 1px solid #404040;
+             border-radius: 12px;
+             cursor: pointer;
+             font-size: 14px;
+             font-weight: 600;
+             transition: all 0.3s ease;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap: 8px;
+         }
+         
+         .enhance-button:hover:not(:disabled) {
+             background: #333;
+             border-color: #555;
+         }
+         
+         .enhance-button:disabled {
+             background: #1e1e1e;
+             border-color: #2a2a2a;
+             color: #666;
+             cursor: not-allowed;
+         }
+         
+         .enhanced-prompts {
+             display: flex;
+             flex-direction: column;
+             gap: 10px;
+             margin-top: 15px;
+         }
+         
+         .prompt-option {
+             background: #2a2a2a;
+             padding: 15px;
+             border-radius: 12px;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             border: 1px solid #333;
+             position: relative;
+         }
+         
+         .prompt-option:hover {
+             background: #333;
+             border-color: #404040;
+         }
+         
+         .prompt-option .label {
+             font-weight: 600;
+             font-size: 12px;
+             color: #888;
+             margin-bottom: 8px;
+             text-transform: uppercase;
+             letter-spacing: 0.5px;
+         }
+         
+         .prompt-option .text {
+             font-size: 13px;
+             line-height: 1.4;
+             word-wrap: break-word;
+             color: #e5e5e5;
+         }
+         
+         .loading {
+             text-align: center;
+             padding: 20px;
+             font-style: italic;
+             color: #888;
+         }
+         
+         .error {
+             background: #2a1f1f;
+             color: #ff9999;
+             padding: 15px;
+             border-radius: 12px;
+             font-size: 13px;
+             border: 1px solid #4a2a2a;
+         }
+         
+         .empty {
+             text-align: center;
+             color: #888;
+             font-style: italic;
+             padding: 30px 20px;
+         }
+         
+         .info {
+             font-size: 11px;
+             color: #888;
+             text-align: center;
+         }
+
+         .message-box {
+             background: #2a2a2a;
+             color: white;
+             padding: 12px 20px;
+             border-radius: 12px;
+             text-align: center;
+             position: fixed;
+             bottom: 20px;
+             left: 50%;
+             transform: translateX(-50%);
+             z-index: 1000;
+             opacity: 0;
+             transition: opacity 0.5s ease-in-out;
+             pointer-events: none;
+             font-weight: 500;
+             border: 1px solid #404040;
+             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+         }
+
+         .message-box.show {
+             opacity: 1;
+             pointer-events: auto;
+         }
+
+         .character-count {
+             font-size: 12px;
+             color: #888;
+             text-align: right;
+             margin-top: 5px;
+         }
+
+         .character-count.over-limit {
+             color: #ff6b6b;
+         }

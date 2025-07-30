@@ -1,5 +1,5 @@
-// Popup script for Prompt Enhancer
-console.log('POPUP: Prompt Enhancer loaded');
+// Popup script for Cognix Prompter
+console.log('POPUP: Cognix Prompter loaded');
 
 const statusEl = document.getElementById('status');
 const originalTextSection = document.getElementById('originalTextSection');
@@ -31,7 +31,6 @@ apiKeyInput.addEventListener('input', () => {
     });
 });
 
-
 function showMessageBox(message, duration = 3000) {
     messageBox.textContent = message;
     messageBox.classList.add('show');
@@ -48,11 +47,11 @@ function updateCharacterCount(text) {
     if (count > limit) {
         characterCountEl.classList.add('over-limit');
         enhanceButton.disabled = true;
-        enhanceButton.textContent = '❌ Text too long';
+        enhanceButton.textContent = 'Text too long';
     } else {
         characterCountEl.classList.remove('over-limit');
         enhanceButton.disabled = false;
-        enhanceButton.textContent = '✨ Enhance Prompt';
+        enhanceButton.textContent = 'Enhance Prompt';
     }
 }
 
@@ -64,7 +63,7 @@ function updateDisplay() {
             currentText = data.currentText;
             currentDetectedUrl = data.url;
             
-            statusEl.textContent = `✅ Detected ${data.currentText.length} characters from ${data.source || 'unknown'}`;
+            statusEl.textContent = `Characters Detected`;
             originalTextEl.textContent = data.currentText;
             updateCharacterCount(data.currentText);
             originalTextSection.style.display = 'block';
@@ -85,11 +84,11 @@ function updateDisplay() {
             // Update button state based on processing
             if (data.isProcessing) {
                 enhanceButton.disabled = true;
-                enhanceButton.textContent = '⏳ Enhancing...';
+                enhanceButton.textContent = 'Enhancing...';
             }
             
         } else {
-            statusEl.textContent = '⏳ Waiting for text input...';
+            statusEl.textContent = 'Waiting for text input...';
             originalTextSection.style.display = 'none';
             enhancedSection.style.display = 'none';
             infoEl.textContent = 'Type something on any webpage to get started!';
@@ -102,13 +101,13 @@ function updateDisplay() {
 function displayEnhancedPrompts(prompts) {
     enhancedPromptsEl.innerHTML = '';
     
-    const labels = ['🔸 Add Context', '🔸 Improve Structure/Clarity', '🔸 Add Details'];
+    const labels = ['Add Context', 'Improve Structure/Clarity', 'Add Details'];
     
     prompts.forEach((prompt, index) => {
         const promptDiv = document.createElement('div');
         promptDiv.className = 'prompt-option';
         promptDiv.innerHTML = `
-            <div class="label">${labels[index] || '🔸 Enhanced'}</div>
+            <div class="label">${labels[index] || 'Enhanced'}</div>
             <div class="text">${prompt}</div>
         `;
         
@@ -124,7 +123,7 @@ function displayEnhancedPrompts(prompts) {
 
 function replaceTextWithPrompt(newText) {
     if (!currentDetectedUrl) {
-        showMessageBox('❌ No active text input detected');
+        showMessageBox('No active text input detected');
         return;
     }
 
@@ -138,20 +137,20 @@ function replaceTextWithPrompt(newText) {
             }, (response) => {
                 if (chrome.runtime.lastError) {
                     console.error('POPUP: Message sending error:', chrome.runtime.lastError);
-                    showMessageBox('❌ Error communicating with page');
+                    showMessageBox('Error communicating with page');
                     return;
                 }
                 if (response && response.success) {
-                    showMessageBox('✅ Prompt replaced successfully!');
+                    showMessageBox('Prompt replaced successfully!');
                     // Clear enhanced prompts after successful replacement
                     chrome.storage.local.set({ enhancedPrompts: [] });
                     enhancedSection.style.display = 'none';
                 } else {
-                    showMessageBox(`❌ ${response?.message || 'Failed to replace text'}`);
+                    showMessageBox(`${response?.message || 'Failed to replace text'}`);
                 }
             });
         } else {
-            showMessageBox('❌ Please switch to the correct tab');
+            showMessageBox('Please switch to the correct tab');
         }
     });
 }
@@ -161,24 +160,24 @@ enhanceButton.addEventListener('click', async () => {
     const apiKey = apiKeyInput.value.trim();
     
     if (!apiKey) {
-        showMessageBox('❌ Please enter your Groq API key');
+        showMessageBox('Please enter your Groq API key');
         apiKeyInput.focus();
         return;
     }
     
     if (!currentText.trim()) {
-        showMessageBox('❌ No text to enhance');
+        showMessageBox('No text to enhance');
         return;
     }
     
     if (currentText.length > 4000) {
-        showMessageBox('❌ Text is too long (max 4000 characters)');
+        showMessageBox('Text is too long (max 4000 characters)');
         return;
     }
     
     // Update UI to show processing
     enhanceButton.disabled = true;
-    enhanceButton.textContent = '⏳ Enhancing...';
+    enhanceButton.textContent = 'Enhancing...';
     chrome.storage.local.set({ isProcessing: true });
     
     try {
@@ -190,12 +189,12 @@ enhanceButton.addEventListener('click', async () => {
         }, (response) => {
             // Reset button state
             enhanceButton.disabled = false;
-            enhanceButton.textContent = '✨ Enhance Prompt';
+            enhanceButton.textContent = 'Enhance Prompt';
             chrome.storage.local.set({ isProcessing: false });
             
             if (chrome.runtime.lastError) {
                 console.error('Runtime error:', chrome.runtime.lastError);
-                showMessageBox('❌ Extension error occurred');
+                showMessageBox('Extension error occurred');
                 return;
             }
             
@@ -203,18 +202,18 @@ enhanceButton.addEventListener('click', async () => {
                 enhancedPrompts = response.enhancedPrompts;
                 chrome.storage.local.set({ enhancedPrompts: enhancedPrompts });
                 displayEnhancedPrompts(enhancedPrompts);
-                showMessageBox('✅ Prompts enhanced successfully!');
+                showMessageBox('Prompts enhanced successfully!');
             } else {
                 const errorMsg = response?.error || 'Unknown error occurred';
-                showMessageBox(`❌ ${errorMsg}`);
+                showMessageBox(`${errorMsg}`);
                 console.error('Enhancement error:', errorMsg);
             }
         });
     } catch (error) {
         enhanceButton.disabled = false;
-        enhanceButton.textContent = '✨ Enhance Prompt';
+        enhanceButton.textContent = 'Enhance Prompt';
         chrome.storage.local.set({ isProcessing: false });
-        showMessageBox('❌ Error occurred while enhancing');
+        showMessageBox('Error occurred while enhancing');
         console.error('Error:', error);
     }
 });

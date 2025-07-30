@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Prompt Enhancer extension installed');
+  console.log('Cognix Prompter extension installed');
   
   // Initialize storage
   chrome.storage.local.set({

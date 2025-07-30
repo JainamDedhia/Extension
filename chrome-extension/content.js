@@ -177,7 +177,33 @@
         removeEnhancerUI();
 
         enhancerIcon = document.createElement('div');
-        enhancerIcon.innerHTML = '🧠';
+       const iconImg = document.createElement('img');
+        iconImg.src = chrome.runtime.getURL("images/cognix.svg");
+        iconImg.alt = "Enhancer Icon";
+            
+        // Style the icon image to fit perfectly in a circle
+        iconImg.style.width = "100%";
+        iconImg.style.height = "100%";
+        iconImg.style.objectFit = "contain"; // use "cover" if you want full coverage
+        iconImg.style.padding = "4px";
+        iconImg.style.borderRadius = "50%";
+        iconImg.style.display = "block";
+        iconImg.style.backgroundColor = "#fff"; // optional for contrast
+            
+        // Style the enhancerIcon container itself (circular)
+        enhancerIcon.style.width = "32px";
+        enhancerIcon.style.height = "32px";
+        enhancerIcon.style.borderRadius = "50%";
+        enhancerIcon.style.overflow = "hidden";
+        enhancerIcon.style.display = "flex";
+        enhancerIcon.style.alignItems = "center";
+        enhancerIcon.style.justifyContent = "center";
+        enhancerIcon.style.boxShadow = "0 0 4px rgba(0,0,0,0.4)"; // optional shadow
+            
+        // Clear and add the styled icon
+        enhancerIcon.innerHTML = '';
+        enhancerIcon.appendChild(iconImg);
+
         enhancerIcon.style.cssText = `
             position: absolute;
             right: 8px;
@@ -185,17 +211,17 @@
             width: 40px;
             height: 40px;
             border-radius: 20px;
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 50%, #1e5f99 100%);
-            color: white;
+            background: #2a2a2a;
+            color: #e5e5e5;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
             cursor: pointer;
             z-index: 2147483647;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 4px 10px rgba(74,144,226,0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid #404040;
             transition: all 0.3s ease;
         `;
         
@@ -204,13 +230,13 @@
         enhancerIcon.style.left = `${window.scrollX + rect.right - 44}px`;
 
         enhancerIcon.addEventListener('mouseenter', () => {
-            enhancerIcon.style.transform = 'scale(1.1)';
-            enhancerIcon.style.boxShadow = '0 12px 35px rgba(0,0,0,0.4), 0 6px 15px rgba(74,144,226,0.3)';
+            enhancerIcon.style.background = '#333';
+            enhancerIcon.style.borderColor = '#555';
         });
 
         enhancerIcon.addEventListener('mouseleave', () => {
-            enhancerIcon.style.transform = 'scale(1)';
-            enhancerIcon.style.boxShadow = '0 8px 25px rgba(0,0,0,0.3), 0 4px 10px rgba(74,144,226,0.2)';
+            enhancerIcon.style.background = '#2a2a2a';
+            enhancerIcon.style.borderColor = '#404040';
         });
 
         enhancerIcon.addEventListener('click', () => {
@@ -236,13 +262,13 @@
             position: absolute;
             width: 450px;
             padding: 0;
-            background: #ffffff;
+            background: #1a1a1a;
             border-radius: 20px;
-            color: #1a1a1a;
+            color: #e5e5e5;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 8px 30px rgba(0,0,0,0.6);
             z-index: 2147483647;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid #333;
             overflow: hidden;
             opacity: 0;
             transform: translateY(-10px) scale(0.95);
@@ -252,9 +278,10 @@
         enhancerPopup.innerHTML = `
             <div style="
                 padding: 24px 24px 20px 24px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: #2a2a2a;
                 position: relative;
                 border-radius: 20px 20px 0 0;
+                border-bottom: 1px solid #333;
             ">
                 <button id="closePopupBtn" style="
                     position: absolute;
@@ -263,8 +290,8 @@
                     width: 32px;
                     height: 32px;
                     border: none;
-                    background: rgba(255,255,255,0.2);
-                    color: white;
+                    background: #404040;
+                    color: #e5e5e5;
                     border-radius: 50%;
                     cursor: pointer;
                     display: flex;
@@ -273,21 +300,22 @@
                     font-size: 16px;
                     font-weight: bold;
                     transition: all 0.2s ease;
-                    backdrop-filter: blur(10px);
                 "
                 >×</button>
                 <div style="
-                    font-weight: 700;
-                    font-size: 20px;
-                    color: white;
+                    font-weight: 400;
+                    font-size: 18px;
+                    color: #ffffff;
                     margin-bottom: 8px;
                     text-align: center;
+                    letter-spacing: 2px;
+                    text-transform: uppercase;
                 ">
-                    ✨ Prompt Enhancer
+                    cognix prompter
                 </div>
                 <div style="
                     font-size: 14px;
-                    color: rgba(255,255,255,0.9);
+                    color: #b0b0b0;
                     text-align: center;
                     opacity: 0.9;
                 ">
@@ -299,11 +327,11 @@
                 <div style="margin-bottom: 20px;">
                     <label style="
                         display: block;
-                        font-weight: 600;
+                        font-weight: 500;
                         font-size: 14px;
-                        color: #374151;
+                        color: #b0b0b0;
                         margin-bottom: 8px;
-                    ">Original Prompt</label>
+                    ">Your prompt...</label>
                     <textarea
                         id="promptTextarea"
                         placeholder="Enter your prompt here..."
@@ -311,10 +339,10 @@
                             width: 100%;
                             height: 100px;
                             padding: 16px;
-                            border: 2px solid #e5e7eb;
+                            border: 1px solid #404040;
                             border-radius: 12px;
-                            background: #f9fafb;
-                            color: #1f2937;
+                            background: #2a2a2a;
+                            color: #e5e5e5;
                             font-size: 14px;
                             font-family: inherit;
                             resize: none;
@@ -326,7 +354,7 @@
                     <div id="characterDisplay" style="
                         font-size: 12px;
                         text-align: right;
-                        color: #6b7280;
+                        color: #888;
                         margin-top: 4px;
                     "></div>
                 </div>
@@ -334,16 +362,15 @@
                 <button id="enhancePromptBtn" style="
                     width: 100%;
                     padding: 16px 24px;
-                    border: none;
+                    border: 1px solid #404040;
                     border-radius: 12px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
+                    background: #2a2a2a;
+                    color: #e5e5e5;
                     font-weight: 600;
                     font-size: 16px;
                     cursor: pointer;
                     font-family: inherit;
                     transition: all 0.2s ease;
-                    box-shadow: 0 4px 15px rgba(102,126,234,0.3);
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -351,7 +378,6 @@
                     margin-bottom: 24px;
                 "
                 >
-                    <span style="font-size: 18px;">✨</span>
                     Enhance Prompt
                 </button>
                 
@@ -359,7 +385,7 @@
                     <div style="
                         font-weight: 600;
                         font-size: 16px;
-                        color: #1f2937;
+                        color: #e5e5e5;
                         margin-bottom: 16px;
                         text-align: center;
                     ">Enhanced Prompts</div>
@@ -375,13 +401,13 @@
                     display: none;
                     text-align: center;
                     padding: 40px 20px;
-                    color: #6b7280;
+                    color: #888;
                 ">
                     <div style="
                         width: 40px;
                         height: 40px;
-                        border: 3px solid #e5e7eb;
-                        border-top: 3px solid #667eea;
+                        border: 3px solid #404040;
+                        border-top: 3px solid #e5e5e5;
                         border-radius: 50%;
                         animation: spin 1s linear infinite;
                         margin: 0 auto 16px;
@@ -518,22 +544,22 @@
             characterDisplay.textContent = `${count}/${limit} characters`;
             
             if (count > limit) {
-                characterDisplay.style.color = '#ef4444';
+                characterDisplay.style.color = '#ff6b6b';
                 enhanceBtn.disabled = true;
                 enhanceBtn.style.opacity = '0.5';
                 enhanceBtn.style.cursor = 'not-allowed';
-                enhanceBtn.innerHTML = '<span style="font-size: 18px;">❌</span> Text too long';
+                enhanceBtn.innerHTML = 'Text too long';
             } else if (count === 0) {
                 enhanceBtn.disabled = true;
                 enhanceBtn.style.opacity = '0.5';
                 enhanceBtn.style.cursor = 'not-allowed';
-                enhanceBtn.innerHTML = '<span style="font-size: 18px;">✨</span> Enter text to enhance';
+                enhanceBtn.innerHTML = 'Enter text to enhance';
             } else {
-                characterDisplay.style.color = '#6b7280';
+                characterDisplay.style.color = '#888';
                 enhanceBtn.disabled = false;
                 enhanceBtn.style.opacity = '1';
                 enhanceBtn.style.cursor = 'pointer';
-                enhanceBtn.innerHTML = '<span style="font-size: 18px;">✨</span> Enhance Prompt';
+                enhanceBtn.innerHTML = 'Enhance Prompt';
             }
         }
 
@@ -545,34 +571,34 @@
 
         // Focus/blur effects
         textarea.addEventListener('focus', () => {
-            textarea.style.borderColor = '#667eea';
-            textarea.style.background = '#ffffff';
+            textarea.style.borderColor = '#555';
+            textarea.style.background = '#333';
         });
 
         textarea.addEventListener('blur', () => {
-            textarea.style.borderColor = '#e5e7eb';
-            textarea.style.background = '#f9fafb';
+            textarea.style.borderColor = '#404040';
+            textarea.style.background = '#2a2a2a';
         });
 
         // Button hover effects
         enhanceBtn.addEventListener('mouseenter', () => {
             if (!enhanceBtn.disabled) {
-                enhanceBtn.style.transform = 'translateY(-2px)';
-                enhanceBtn.style.boxShadow = '0 8px 25px rgba(102,126,234,0.4)';
+                enhanceBtn.style.background = '#333';
+                enhanceBtn.style.borderColor = '#555';
             }
         });
 
         enhanceBtn.addEventListener('mouseleave', () => {
-            enhanceBtn.style.transform = 'translateY(0)';
-            enhanceBtn.style.boxShadow = '0 4px 15px rgba(102,126,234,0.3)';
+            enhanceBtn.style.background = '#2a2a2a';
+            enhanceBtn.style.borderColor = '#404040';
         });
 
         closeBtn.addEventListener('mouseenter', () => {
-            closeBtn.style.background = 'rgba(255,255,255,0.3)';
+            closeBtn.style.background = '#555';
         });
 
         closeBtn.addEventListener('mouseleave', () => {
-            closeBtn.style.background = 'rgba(255,255,255,0.2)';
+            closeBtn.style.background = '#404040';
         });
 
         // Event listeners
@@ -652,11 +678,11 @@
             position: fixed;
             width: 400px;
             max-height: 500px;
-            background: #ffffff;
+            background: #1a1a1a;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 8px 30px rgba(0,0,0,0.6);
             z-index: 2147483648;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid #333;
             overflow-y: auto;
             opacity: 0;
             transform: scale(0.95);
@@ -666,21 +692,22 @@
         enhancedSection.innerHTML = `
             <div style="
                 padding: 20px 20px 16px 20px;
-                border-bottom: 1px solid #f0f0f0;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-bottom: 1px solid #333;
+                background: #2a2a2a;
                 border-radius: 16px 16px 0 0;
             ">
                 <div style="
-                    font-weight: 700;
+                    font-weight: 400;
                     font-size: 18px;
-                    color: white;
+                    color: #ffffff;
                     text-align: center;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 8px;
+                    letter-spacing: 2px;
+                    text-transform: uppercase;
                 ">
-                    <span style="font-size: 20px;">✨</span>
                     Enhanced Prompts
                 </div>
             </div>
@@ -697,9 +724,9 @@
         const enhancedPromptCards = enhancedSection.querySelector('#enhancedPromptCards');
         
         const categories = [
-            { title: 'Context', icon: '🎯', color: '#3b82f6' },
-            { title: 'Design', icon: '🎨', color: '#8b5cf6' },
-            { title: 'Add Details', icon: '📝', color: '#10b981' }
+            { title: 'Context', color: '#555' },
+            { title: 'Structure', color: '#555' },
+            { title: 'Details', color: '#555' }
         ];
         
         prompts.forEach((prompt, index) => {
@@ -707,9 +734,9 @@
             const promptCard = document.createElement('div');
             promptCard.style.cssText = `
                 padding: 20px;
-                border: 2px solid #e5e7eb;
+                border: 1px solid #333;
                 border-radius: 16px;
-                background: #ffffff;
+                background: #2a2a2a;
                 cursor: pointer;
                 transition: all 0.2s ease;
                 position: relative;
@@ -723,24 +750,25 @@
                     gap: 8px;
                     margin-bottom: 12px;
                 ">
-                    <span style="font-size: 18px;">${category.icon}</span>
                     <span style="
                         font-weight: 600;
-                        font-size: 16px;
-                        color: ${category.color};
+                        font-size: 14px;
+                        color: #888;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
                     ">${category.title}</span>
                 </div>
                 <div style="
                     font-size: 14px;
                     line-height: 1.6;
-                    color: #374151;
+                    color: #e5e5e5;
                 ">${prompt}</div>
                 <div style="
                     position: absolute;
                     top: 16px;
                     right: 16px;
-                    background: ${category.color};
-                    color: white;
+                    background: #404040;
+                    color: #e5e5e5;
                     padding: 6px 12px;
                     border-radius: 8px;
                     font-size: 12px;
@@ -751,16 +779,14 @@
             `;
             
             promptCard.addEventListener('mouseenter', () => {
-                promptCard.style.borderColor = category.color;
-                promptCard.style.transform = 'translateY(-4px)';
-                promptCard.style.boxShadow = `0 8px 25px ${category.color}20`;
+                promptCard.style.borderColor = '#555';
+                promptCard.style.background = '#333';
                 promptCard.querySelector('div:last-child').style.opacity = '1';
             });
             
             promptCard.addEventListener('mouseleave', () => {
-                promptCard.style.borderColor = '#e5e7eb';
-                promptCard.style.transform = 'translateY(0)';
-                promptCard.style.boxShadow = 'none';
+                promptCard.style.borderColor = '#333';
+                promptCard.style.background = '#2a2a2a';
                 promptCard.querySelector('div:last-child').style.opacity = '0';
             });
             
@@ -825,7 +851,7 @@
             right: 20px;
             padding: 16px 20px;
             border-radius: 12px;
-            color: white;
+            color: #e5e5e5;
             font-weight: 500;
             font-size: 14px;
             z-index: 2147483648;
@@ -833,18 +859,19 @@
             transform: translateX(100px);
             transition: all 0.3s ease;
             max-width: 300px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #404040;
         `;
         
         if (type === 'success') {
-            notification.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-            notification.innerHTML = `✅ ${message}`;
+            notification.style.background = '#2a2a2a';
+            notification.innerHTML = `✓ ${message}`;
         } else if (type === 'error') {
-            notification.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-            notification.innerHTML = `❌ ${message}`;
+            notification.style.background = '#2a1f1f';
+            notification.innerHTML = `✗ ${message}`;
         } else {
-            notification.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
-            notification.innerHTML = `ℹ️ ${message}`;
+            notification.style.background = '#2a2a2a';
+            notification.innerHTML = `ℹ ${message}`;
         }
         
         document.body.appendChild(notification);

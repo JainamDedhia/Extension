@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Text Input Reflector",
+  "name": "Cognix Prompter",
   "version": "1.0",
-  "description": "Reflects text input content in extension popup",
+  "description": "AI-powered prompt enhancement extension",
   "permissions": [
     "storage",
     "activeTab",
@@ -19,16 +19,20 @@
     }
   ],
   "background": {
-  "service_worker": "background.js"
-},
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Text Input Reflector"
+    "default_title": "Cognix Prompter"
   },
   "web_accessible_resources": [
     {
-      "resources": ["ui-components.js", "text-detector.js"],
-      "matches": ["*://*/*"]
+      "resources": [
+        "ui-components.js",
+        "text-detector.js",
+        "images/cognix.svg"    
+      ],
+      "matches": ["<all_urls>"]
     }
   ]
 }
