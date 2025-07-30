@@ -9,7 +9,7 @@
     "scripting"
   ],
   "host_permissions": [
-    "https://generativelanguage.googleapis.com/*"
+    "https://api.groq.com/*"
   ],
   "content_scripts": [
     {
@@ -24,5 +24,11 @@
   "action": {
     "default_popup": "popup.html",
     "default_title": "Text Input Reflector"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["ui-components.js", "text-detector.js"],
+      "matches": ["*://*/*"]
+    }
+  ]
 }
