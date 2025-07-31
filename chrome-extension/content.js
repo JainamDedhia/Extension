@@ -170,73 +170,79 @@
     }, 1000);
 
     // -------------------------------
-    // FLOATING ICON + MINI POPUP UI
+    // FLOATING ICON + MINI POPUP UI WITH GLASSMORPHISM
     // -------------------------------
 
     function showEnhancerIcon(targetElement) {
         removeEnhancerUI();
 
         enhancerIcon = document.createElement('div');
-       const iconImg = document.createElement('img');
+        const iconImg = document.createElement('img');
         iconImg.src = chrome.runtime.getURL("images/cognix.svg");
         iconImg.alt = "Enhancer Icon";
             
         // Style the icon image to fit perfectly in a circle
         iconImg.style.width = "100%";
         iconImg.style.height = "100%";
-        iconImg.style.objectFit = "contain"; // use "cover" if you want full coverage
-        iconImg.style.padding = "4px";
+        iconImg.style.objectFit = "contain";
+        iconImg.style.padding = "6px";
         iconImg.style.borderRadius = "50%";
         iconImg.style.display = "block";
-        iconImg.style.backgroundColor = "#fff"; // optional for contrast
+        iconImg.style.filter = "drop-shadow(0 0 8px rgba(255,255,255,0.3))";
             
-        // Style the enhancerIcon container itself (circular)
-        enhancerIcon.style.width = "32px";
-        enhancerIcon.style.height = "32px";
-        enhancerIcon.style.borderRadius = "50%";
-        enhancerIcon.style.overflow = "hidden";
-        enhancerIcon.style.display = "flex";
-        enhancerIcon.style.alignItems = "center";
-        enhancerIcon.style.justifyContent = "center";
-        enhancerIcon.style.boxShadow = "0 0 4px rgba(0,0,0,0.4)"; // optional shadow
-            
-        // Clear and add the styled icon
-        enhancerIcon.innerHTML = '';
-        enhancerIcon.appendChild(iconImg);
-
+        // Enhanced glassmorphism floating icon
         enhancerIcon.style.cssText = `
             position: absolute;
             right: 8px;
             bottom: 8px;
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            background: #2a2a2a;
-            color: #e5e5e5;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(42, 42, 42, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             cursor: pointer;
             z-index: 2147483647;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid #404040;
-            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            animation: cognixPulse 3s ease-in-out infinite;
         `;
         
+        // Clear and add the styled icon
+        enhancerIcon.innerHTML = '';
+        enhancerIcon.appendChild(iconImg);
+        
         const rect = targetElement.getBoundingClientRect();
-        enhancerIcon.style.top = `${window.scrollY + rect.bottom - 44}px`;
-        enhancerIcon.style.left = `${window.scrollX + rect.right - 44}px`;
+        enhancerIcon.style.top = `${window.scrollY + rect.bottom - 52}px`;
+        enhancerIcon.style.left = `${window.scrollX + rect.right - 52}px`;
 
         enhancerIcon.addEventListener('mouseenter', () => {
-            enhancerIcon.style.background = '#333';
-            enhancerIcon.style.borderColor = '#555';
+            enhancerIcon.style.transform = 'scale(1.1) translateY(-2px)';
+            enhancerIcon.style.background = 'rgba(64, 64, 64, 0.3)';
+            enhancerIcon.style.boxShadow = `
+                0 12px 40px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 0 20px rgba(229, 229, 229, 0.1)
+            `;
         });
 
         enhancerIcon.addEventListener('mouseleave', () => {
-            enhancerIcon.style.background = '#2a2a2a';
-            enhancerIcon.style.borderColor = '#404040';
+            enhancerIcon.style.transform = 'scale(1) translateY(0)';
+            enhancerIcon.style.background = 'rgba(42, 42, 42, 0.2)';
+            enhancerIcon.style.boxShadow = `
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1)
+            `;
         });
 
         enhancerIcon.addEventListener('click', () => {
@@ -249,170 +255,222 @@
     function togglePopup(targetElement, promptText) {
         if (enhancerPopup) {
             enhancerPopup.style.opacity = '0';
-            enhancerPopup.style.transform = 'translateY(-10px) scale(0.95)';
+            enhancerPopup.style.transform = 'translateY(-20px) scale(0.9)';
             setTimeout(() => {
                 enhancerPopup.remove();
                 enhancerPopup = null;
-            }, 200);
+            }, 300);
             return;
         }
 
         enhancerPopup = document.createElement('div');
         enhancerPopup.style.cssText = `
             position: absolute;
-            width: 450px;
+            width: 480px;
             padding: 0;
-            background: #1a1a1a;
-            border-radius: 20px;
+            background: rgba(26, 26, 26, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
             color: #e5e5e5;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 8px 30px rgba(0,0,0,0.6);
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             z-index: 2147483647;
-            border: 1px solid #333;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             overflow: hidden;
             opacity: 0;
-            transform: translateY(-10px) scale(0.95);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(-20px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         `;
         
         enhancerPopup.innerHTML = `
             <div style="
-                padding: 24px 24px 20px 24px;
-                background: #2a2a2a;
+                padding: 28px 28px 24px 28px;
+                background: rgba(42, 42, 42, 0.2);
+                backdrop-filter: blur(10px);
                 position: relative;
-                border-radius: 20px 20px 0 0;
-                border-bottom: 1px solid #333;
+                border-radius: 24px 24px 0 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                overflow: hidden;
             ">
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 100%;
+                    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+                    pointer-events: none;
+                "></div>
                 <button id="closePopupBtn" style="
                     position: absolute;
-                    top: 16px;
-                    right: 16px;
-                    width: 32px;
-                    height: 32px;
+                    top: 20px;
+                    right: 20px;
+                    width: 36px;
+                    height: 36px;
                     border: none;
-                    background: #404040;
+                    background: rgba(64, 64, 64, 0.3);
+                    backdrop-filter: blur(10px);
                     color: #e5e5e5;
                     border-radius: 50%;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 16px;
-                    font-weight: bold;
-                    transition: all 0.2s ease;
+                    font-size: 18px;
+                    font-weight: 300;
+                    transition: all 0.3s ease;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
                 "
                 >×</button>
                 <div style="
-                    font-weight: 400;
-                    font-size: 18px;
+                    font-weight: 300;
+                    font-size: 20px;
                     color: #ffffff;
-                    margin-bottom: 8px;
+                    margin-bottom: 10px;
                     text-align: center;
-                    letter-spacing: 2px;
+                    letter-spacing: 3px;
                     text-transform: uppercase;
+                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+                    position: relative;
+                    z-index: 1;
                 ">
                     cognix prompter
                 </div>
                 <div style="
                     font-size: 14px;
-                    color: #b0b0b0;
+                    color: rgba(176, 176, 176, 0.8);
                     text-align: center;
                     opacity: 0.9;
+                    position: relative;
+                    z-index: 1;
                 ">
                     Transform your prompts with AI
                 </div>
             </div>
             
-            <div style="padding: 24px;">
-                <div style="margin-bottom: 20px;">
+            <div style="padding: 28px; position: relative; overflow: hidden;">
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%);
+                    pointer-events: none;
+                "></div>
+                
+                <div style="margin-bottom: 24px; position: relative; z-index: 1;">
                     <label style="
                         display: block;
                         font-weight: 500;
                         font-size: 14px;
-                        color: #b0b0b0;
-                        margin-bottom: 8px;
+                        color: rgba(176, 176, 176, 0.9);
+                        margin-bottom: 10px;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
                     ">Your prompt...</label>
                     <textarea
                         id="promptTextarea"
                         placeholder="Enter your prompt here..."
                         style="
                             width: 100%;
-                            height: 100px;
-                            padding: 16px;
-                            border: 1px solid #404040;
-                            border-radius: 12px;
-                            background: #2a2a2a;
+                            height: 110px;
+                            padding: 18px;
+                            border: 1px solid rgba(255, 255, 255, 0.08);
+                            border-radius: 16px;
+                            background: rgba(42, 42, 42, 0.15);
+                            backdrop-filter: blur(10px);
                             color: #e5e5e5;
                             font-size: 14px;
                             font-family: inherit;
                             resize: none;
                             outline: none;
-                            transition: all 0.2s ease;
+                            transition: all 0.3s ease;
                             box-sizing: border-box;
+                            box-shadow: 
+                                inset 0 2px 8px rgba(0, 0, 0, 0.2),
+                                0 0 0 1px rgba(255, 255, 255, 0.02);
                         "
                     >${promptText}</textarea>
                     <div id="characterDisplay" style="
                         font-size: 12px;
                         text-align: right;
-                        color: #888;
-                        margin-top: 4px;
+                        color: rgba(136, 136, 136, 0.8);
+                        margin-top: 6px;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
                     "></div>
                 </div>
                 
                 <button id="enhancePromptBtn" style="
                     width: 100%;
-                    padding: 16px 24px;
-                    border: 1px solid #404040;
-                    border-radius: 12px;
-                    background: #2a2a2a;
+                    padding: 18px 28px;
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    border-radius: 16px;
+                    background: rgba(42, 42, 42, 0.2);
+                    backdrop-filter: blur(15px);
                     color: #e5e5e5;
                     font-weight: 600;
                     font-size: 16px;
                     cursor: pointer;
                     font-family: inherit;
-                    transition: all 0.2s ease;
+                    transition: all 0.3s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 8px;
-                    margin-bottom: 24px;
+                    gap: 10px;
+                    margin-bottom: 28px;
+                    box-shadow: 
+                        0 4px 20px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+                    position: relative;
+                    overflow: hidden;
                 "
                 >
-                    Enhance Prompt
+                    <span style="position: relative; z-index: 1;">Enhance Prompt</span>
                 </button>
                 
-                <div id="enhancedResults" style="display: none;">
+                <div id="enhancedResults" style="display: none; position: relative; z-index: 1;">
                     <div style="
                         font-weight: 600;
                         font-size: 16px;
                         color: #e5e5e5;
-                        margin-bottom: 16px;
+                        margin-bottom: 20px;
                         text-align: center;
+                        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
                     ">Enhanced Prompts</div>
                     
                     <div id="promptOptions" style="
                         display: flex;
                         flex-direction: column;
-                        gap: 12px;
+                        gap: 16px;
                     "></div>
                 </div>
                 
                 <div id="loadingState" style="
                     display: none;
                     text-align: center;
-                    padding: 40px 20px;
-                    color: #888;
+                    padding: 45px 20px;
+                    color: rgba(136, 136, 136, 0.8);
+                    position: relative;
+                    z-index: 1;
                 ">
                     <div style="
-                        width: 40px;
-                        height: 40px;
-                        border: 3px solid #404040;
-                        border-top: 3px solid #e5e5e5;
+                        width: 44px;
+                        height: 44px;
+                        border: 3px solid rgba(255, 255, 255, 0.1);
+                        border-top: 3px solid rgba(229, 229, 229, 0.6);
                         border-radius: 50%;
-                        animation: spin 1s linear infinite;
-                        margin: 0 auto 16px;
+                        animation: cognixSpin 1.2s linear infinite;
+                        margin: 0 auto 20px;
+                        backdrop-filter: blur(5px);
+                        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
                     "></div>
-                    <div>Enhancing your prompt...</div>
+                    <div style="text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);">Enhancing your prompt...</div>
                 </div>
             </div>
         `;
@@ -425,8 +483,8 @@
                     enhancerPopup.style.left = data.enhancerPopupPosition.left;
                 } else {
                     const rect = enhancerIcon.getBoundingClientRect();
-                    enhancerPopup.style.top = `${window.scrollY + rect.top - 300}px`;
-                    enhancerPopup.style.left = `${window.scrollX + rect.left - 190}px`;
+                    enhancerPopup.style.top = `${window.scrollY + rect.top - 320}px`;
+                    enhancerPopup.style.left = `${window.scrollX + rect.left - 200}px`;
                 }
             });
         }
@@ -439,12 +497,34 @@
             enhancerPopup.style.transform = 'translateY(0) scale(1)';
         }, 10);
 
-        // Add CSS animation
+        // Add enhanced CSS animations
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes spin {
+            @keyframes cognixSpin {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
+            }
+            
+            @keyframes cognixPulse {
+                0%, 100% { 
+                    box-shadow: 
+                        0 8px 32px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(255, 255, 255, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                        0 0 0 0 rgba(229, 229, 229, 0.3);
+                }
+                50% { 
+                    box-shadow: 
+                        0 8px 32px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(255, 255, 255, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                        0 0 0 8px rgba(229, 229, 229, 0.1);
+                }
+            }
+            
+            @keyframes cognixShimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
             }
         `;
         document.head.appendChild(style);
@@ -461,9 +541,9 @@
             scrollY: window.scrollY
         };
         
-        const enhancedSectionWidth = 400;
-        const enhancedSectionHeight = 500;
-        const margin = 20;
+        const enhancedSectionWidth = 420;
+        const enhancedSectionHeight = 520;
+        const margin = 25;
         
         // Calculate available space in each direction
         const spaceRight = viewport.width - (popupRect.right - viewport.scrollX);
@@ -494,7 +574,7 @@
     
     function positionEnhancedSection(enhancedSection, popupRect) {
         const position = calculateOptimalPosition(popupRect);
-        const margin = 20;
+        const margin = 25;
         
         // Reset any previous positioning
         enhancedSection.style.position = 'fixed';
@@ -544,22 +624,22 @@
             characterDisplay.textContent = `${count}/${limit} characters`;
             
             if (count > limit) {
-                characterDisplay.style.color = '#ff6b6b';
+                characterDisplay.style.color = 'rgba(255, 107, 107, 0.9)';
                 enhanceBtn.disabled = true;
                 enhanceBtn.style.opacity = '0.5';
                 enhanceBtn.style.cursor = 'not-allowed';
-                enhanceBtn.innerHTML = 'Text too long';
+                enhanceBtn.innerHTML = '<span style="position: relative; z-index: 1;">Text too long</span>';
             } else if (count === 0) {
                 enhanceBtn.disabled = true;
                 enhanceBtn.style.opacity = '0.5';
                 enhanceBtn.style.cursor = 'not-allowed';
-                enhanceBtn.innerHTML = 'Enter text to enhance';
+                enhanceBtn.innerHTML = '<span style="position: relative; z-index: 1;">Enter text to enhance</span>';
             } else {
-                characterDisplay.style.color = '#888';
+                characterDisplay.style.color = 'rgba(136, 136, 136, 0.8)';
                 enhanceBtn.disabled = false;
                 enhanceBtn.style.opacity = '1';
                 enhanceBtn.style.cursor = 'pointer';
-                enhanceBtn.innerHTML = 'Enhance Prompt';
+                enhanceBtn.innerHTML = '<span style="position: relative; z-index: 1;">Enhance Prompt</span>';
             }
         }
 
@@ -569,36 +649,75 @@
             updateCharacterCount(textarea.value);
         });
 
-        // Focus/blur effects
+        // Enhanced focus/blur effects with glassmorphism
         textarea.addEventListener('focus', () => {
-            textarea.style.borderColor = '#555';
-            textarea.style.background = '#333';
+            textarea.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+            textarea.style.background = 'rgba(51, 51, 51, 0.2)';
+            textarea.style.boxShadow = `
+                inset 0 2px 8px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 0 20px rgba(229, 229, 229, 0.05)
+            `;
         });
 
         textarea.addEventListener('blur', () => {
-            textarea.style.borderColor = '#404040';
-            textarea.style.background = '#2a2a2a';
+            textarea.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            textarea.style.background = 'rgba(42, 42, 42, 0.15)';
+            textarea.style.boxShadow = `
+                inset 0 2px 8px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.02)
+            `;
         });
 
-        // Button hover effects
+        // Enhanced button hover effects
         enhanceBtn.addEventListener('mouseenter', () => {
             if (!enhanceBtn.disabled) {
-                enhanceBtn.style.background = '#333';
-                enhanceBtn.style.borderColor = '#555';
+                enhanceBtn.style.background = 'rgba(51, 51, 51, 0.3)';
+                enhanceBtn.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                enhanceBtn.style.transform = 'translateY(-1px)';
+                enhanceBtn.style.boxShadow = `
+                    0 6px 25px rgba(0, 0, 0, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                    0 0 20px rgba(229, 229, 229, 0.05)
+                `;
+                
+                // Add shimmer effect
+                const shimmer = document.createElement('div');
+                shimmer.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+                    animation: cognixShimmer 0.8s ease-out;
+                    pointer-events: none;
+                `;
+                enhanceBtn.appendChild(shimmer);
+                setTimeout(() => shimmer.remove(), 800);
             }
         });
 
         enhanceBtn.addEventListener('mouseleave', () => {
-            enhanceBtn.style.background = '#2a2a2a';
-            enhanceBtn.style.borderColor = '#404040';
+            enhanceBtn.style.background = 'rgba(42, 42, 42, 0.2)';
+            enhanceBtn.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            enhanceBtn.style.transform = 'translateY(0)';
+            enhanceBtn.style.boxShadow = `
+                0 4px 20px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1)
+            `;
         });
 
         closeBtn.addEventListener('mouseenter', () => {
-            closeBtn.style.background = '#555';
+            closeBtn.style.background = 'rgba(85, 85, 85, 0.4)';
+            closeBtn.style.transform = 'scale(1.05)';
+            closeBtn.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4)';
         });
 
         closeBtn.addEventListener('mouseleave', () => {
-            closeBtn.style.background = '#404040';
+            closeBtn.style.background = 'rgba(64, 64, 64, 0.3)';
+            closeBtn.style.transform = 'scale(1)';
+            closeBtn.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)';
         });
 
         // Event listeners
@@ -666,7 +785,7 @@
         const enhancedResults = enhancerPopup.querySelector('#enhancedResults');
         const promptOptions = enhancerPopup.querySelector('#promptOptions');
         
-        // Create enhanced section as separate floating element
+        // Create enhanced section as separate floating element with glassmorphism
         let enhancedSection = document.getElementById('promptEnhancerResults');
         if (enhancedSection) {
             enhancedSection.remove();
@@ -676,42 +795,76 @@
         enhancedSection.id = 'promptEnhancerResults';
         enhancedSection.style.cssText = `
             position: fixed;
-            width: 400px;
-            max-height: 500px;
-            background: #1a1a1a;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 8px 30px rgba(0,0,0,0.6);
+            width: 420px;
+            max-height: 520px;
+            background: rgba(26, 26, 26, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 20px;
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             z-index: 2147483648;
-            border: 1px solid #333;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             overflow-y: auto;
             opacity: 0;
-            transform: scale(0.95);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         `;
         
         enhancedSection.innerHTML = `
             <div style="
-                padding: 20px 20px 16px 20px;
-                border-bottom: 1px solid #333;
-                background: #2a2a2a;
-                border-radius: 16px 16px 0 0;
+                padding: 24px 24px 20px 24px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(42, 42, 42, 0.2);
+                backdrop-filter: blur(10px);
+                border-radius: 20px 20px 0 0;
+                position: relative;
+                overflow: hidden;
             ">
                 <div style="
-                    font-weight: 400;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 100%;
+                    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+                    pointer-events: none;
+                "></div>
+                <div style="
+                    font-weight: 300;
                     font-size: 18px;
                     color: #ffffff;
                     text-align: center;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 8px;
+                    gap: 10px;
                     letter-spacing: 2px;
                     text-transform: uppercase;
+                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+                    position: relative;
+                    z-index: 1;
                 ">
                     Enhanced Prompts
                 </div>
             </div>
-            <div style="padding: 20px;" id="enhancedPromptCards"></div>
+            <div style="
+                padding: 24px; 
+                position: relative; 
+                overflow: hidden;
+            " id="enhancedPromptCards">
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%);
+                    pointer-events: none;
+                "></div>
+            </div>
         `;
         
         document.body.appendChild(enhancedSection);
@@ -724,75 +877,129 @@
         const enhancedPromptCards = enhancedSection.querySelector('#enhancedPromptCards');
         
         const categories = [
-            { title: 'Context', color: '#555' },
-            { title: 'Structure', color: '#555' },
-            { title: 'Details', color: '#555' }
+            { title: 'Context', color: 'rgba(100, 100, 255, 0.1)' },
+            { title: 'Structure', color: 'rgba(100, 255, 100, 0.1)' },
+            { title: 'Details', color: 'rgba(255, 100, 100, 0.1)' }
         ];
         
         prompts.forEach((prompt, index) => {
             const category = categories[index] || categories[0];
             const promptCard = document.createElement('div');
             promptCard.style.cssText = `
-                padding: 20px;
-                border: 1px solid #333;
-                border-radius: 16px;
-                background: #2a2a2a;
+                padding: 24px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 18px;
+                background: rgba(42, 42, 42, 0.15);
+                backdrop-filter: blur(15px);
                 cursor: pointer;
-                transition: all 0.2s ease;
+                transition: all 0.3s ease;
                 position: relative;
-                margin-bottom: 16px;
+                margin-bottom: 18px;
+                overflow: hidden;
+                box-shadow: 
+                    0 4px 20px rgba(0, 0, 0, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
             `;
             
             promptCard.innerHTML = `
                 <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: ${category.color};
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    pointer-events: none;
+                "></div>
+                <div style="
                     display: flex;
                     align-items: center;
-                    gap: 8px;
-                    margin-bottom: 12px;
+                    gap: 10px;
+                    margin-bottom: 14px;
+                    position: relative;
+                    z-index: 1;
                 ">
                     <span style="
                         font-weight: 600;
-                        font-size: 14px;
-                        color: #888;
+                        font-size: 13px;
+                        color: rgba(136, 136, 136, 0.9);
                         text-transform: uppercase;
-                        letter-spacing: 0.5px;
+                        letter-spacing: 1px;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
                     ">${category.title}</span>
+                    <div style="
+                        width: 8px;
+                        height: 8px;
+                        background: ${category.color.replace('0.1', '0.6')};
+                        border-radius: 50%;
+                        box-shadow: 0 0 8px ${category.color.replace('0.1', '0.3')};
+                    "></div>
                 </div>
                 <div style="
                     font-size: 14px;
-                    line-height: 1.6;
+                    line-height: 1.7;
                     color: #e5e5e5;
+                    position: relative;
+                    z-index: 1;
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
                 ">${prompt}</div>
                 <div style="
                     position: absolute;
-                    top: 16px;
-                    right: 16px;
-                    background: #404040;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(64, 64, 64, 0.3);
+                    backdrop-filter: blur(10px);
                     color: #e5e5e5;
-                    padding: 6px 12px;
-                    border-radius: 8px;
+                    padding: 8px 14px;
+                    border-radius: 10px;
                     font-size: 12px;
                     font-weight: 500;
                     opacity: 0;
-                    transition: opacity 0.2s ease;
+                    transition: all 0.3s ease;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+                    z-index: 2;
                 ">Click to Use</div>
             `;
             
             promptCard.addEventListener('mouseenter', () => {
-                promptCard.style.borderColor = '#555';
-                promptCard.style.background = '#333';
+                promptCard.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                promptCard.style.background = 'rgba(51, 51, 51, 0.2)';
+                promptCard.style.transform = 'translateY(-2px)';
+                promptCard.style.boxShadow = `
+                    0 8px 30px rgba(0, 0, 0, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                    0 0 20px rgba(229, 229, 229, 0.05)
+                `;
+                promptCard.querySelector('div:first-child').style.opacity = '1';
                 promptCard.querySelector('div:last-child').style.opacity = '1';
+                promptCard.querySelector('div:last-child').style.transform = 'translateY(-2px)';
             });
             
             promptCard.addEventListener('mouseleave', () => {
-                promptCard.style.borderColor = '#333';
-                promptCard.style.background = '#2a2a2a';
+                promptCard.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                promptCard.style.background = 'rgba(42, 42, 42, 0.15)';
+                promptCard.style.transform = 'translateY(0)';
+                promptCard.style.boxShadow = `
+                    0 4px 20px rgba(0, 0, 0, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05)
+                `;
+                promptCard.querySelector('div:first-child').style.opacity = '0';
                 promptCard.querySelector('div:last-child').style.opacity = '0';
+                promptCard.querySelector('div:last-child').style.transform = 'translateY(0)';
             });
             
             promptCard.addEventListener('click', () => {
-                replaceTextWithPrompt(prompt);
-                enhancedSection.remove();
+                // Add click animation
+                promptCard.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    promptCard.style.transform = 'scale(1)';
+                    replaceTextWithPrompt(prompt);
+                    enhancedSection.remove();
+                }, 150);
             });
             
             enhancedPromptCards.appendChild(promptCard);
@@ -808,11 +1015,11 @@
         const closeEnhancedSection = (e) => {
             if (!enhancedSection.contains(e.target) && !enhancerPopup.contains(e.target)) {
                 enhancedSection.style.opacity = '0';
-                enhancedSection.style.transform = 'scale(0.95)';
+                enhancedSection.style.transform = 'scale(0.9)';
                 setTimeout(() => {
                     enhancedSection.remove();
                     document.removeEventListener('click', closeEnhancedSection);
-                }, 200);
+                }, 300);
             }
         };
         
@@ -847,45 +1054,101 @@
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 16px 20px;
-            border-radius: 12px;
+            top: 24px;
+            right: 24px;
+            padding: 18px 24px;
+            border-radius: 16px;
             color: #e5e5e5;
             font-weight: 500;
             font-size: 14px;
             z-index: 2147483648;
             opacity: 0;
-            transform: translateX(100px);
-            transition: all 0.3s ease;
-            max-width: 300px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #404040;
+            transform: translateX(120px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 320px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         `;
         
         if (type === 'success') {
-            notification.style.background = '#2a2a2a';
-            notification.innerHTML = `✓ ${message}`;
+            notification.style.background = 'rgba(42, 42, 42, 0.2)';
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="
+                        width: 20px; 
+                        height: 20px; 
+                        background: rgba(100, 255, 100, 0.2);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #64ff64;
+                        font-size: 12px;
+                        font-weight: bold;
+                        box-shadow: 0 0 10px rgba(100, 255, 100, 0.3);
+                    ">✓</div>
+                    <span>${message}</span>
+                </div>
+            `;
         } else if (type === 'error') {
-            notification.style.background = '#2a1f1f';
-            notification.innerHTML = `✗ ${message}`;
+            notification.style.background = 'rgba(42, 31, 31, 0.2)';
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="
+                        width: 20px; 
+                        height: 20px; 
+                        background: rgba(255, 100, 100, 0.2);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #ff6464;
+                        font-size: 12px;
+                        font-weight: bold;
+                        box-shadow: 0 0 10px rgba(255, 100, 100, 0.3);
+                    ">✗</div>
+                    <span>${message}</span>
+                </div>
+            `;
         } else {
-            notification.style.background = '#2a2a2a';
-            notification.innerHTML = `ℹ ${message}`;
+            notification.style.background = 'rgba(42, 42, 42, 0.2)';
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="
+                        width: 20px; 
+                        height: 20px; 
+                        background: rgba(100, 100, 255, 0.2);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #6464ff;
+                        font-size: 12px;
+                        font-weight: bold;
+                        box-shadow: 0 0 10px rgba(100, 100, 255, 0.3);
+                    ">ℹ</div>
+                    <span>${message}</span>
+                </div>
+            `;
         }
         
         document.body.appendChild(notification);
         
         setTimeout(() => {
             notification.style.opacity = '1';
-            notification.style.transform = 'translateX(0)';
+            notification.style.transform = 'translateX(0) scale(1)';
         }, 10);
         
         setTimeout(() => {
             notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100px)';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
+            notification.style.transform = 'translateX(120px) scale(0.9)';
+            setTimeout(() => notification.remove(), 400);
+        }, 3500);
     }
 
     function closePopup() {
@@ -897,11 +1160,11 @@
             }
             
             enhancerPopup.style.opacity = '0';
-            enhancerPopup.style.transform = 'translateY(-10px) scale(0.95)';
+            enhancerPopup.style.transform = 'translateY(-20px) scale(0.9)';
             setTimeout(() => {
                 enhancerPopup.remove();
                 enhancerPopup = null;
-            }, 200);
+            }, 300);
         }
     }
 
@@ -932,6 +1195,7 @@
             offsetX = e.clientX - popup.getBoundingClientRect().left;
             offsetY = e.clientY - popup.getBoundingClientRect().top;
             popup.style.transition = 'none';
+            popup.style.cursor = 'grabbing';
         });
 
         document.addEventListener('mousemove', (e) => {
@@ -946,6 +1210,7 @@
             if (isDragging) {
                 isDragging = false;
                 popup.style.transition = '';
+                popup.style.cursor = 'default';
                 chrome.storage.local.set({
                     enhancerPopupPosition: {
                         top: popup.style.top,
